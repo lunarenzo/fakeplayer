@@ -139,7 +139,6 @@ public class FakeplayerConfig extends PluginConfig {
     /**
      * 允许执行的命令
      */
-    @Deprecated
     private Set<String> allowCommands;
 
     /**
@@ -223,10 +222,6 @@ public class FakeplayerConfig extends PluginConfig {
                     Main.getInstance().getComponentLogger().warn(translatable("fakeplayer.configuration.out-of-date"));
                 }
             }, 1);
-        }
-
-        if (!this.allowCommands.isEmpty()) {
-            log.warning("allow-commands is deprecated which will be removed at 0.4.0, you should use Permissions Plugin to assign permission groups to fake players.");
         }
 
         var preparingCommands = file.getStringList("preparing-commands");

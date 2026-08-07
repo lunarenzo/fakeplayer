@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-@Deprecated
 @Singleton
 public class UsedIdRepository {
 

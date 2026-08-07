@@ -5,6 +5,7 @@ import com.lishid.openinv.IOpenInv;
 import io.github.hello09x.fakeplayer.core.Main;
 import io.github.hello09x.fakeplayer.core.manager.FakeplayerList;
 import io.github.hello09x.fakeplayer.core.manager.FakeplayerManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
@@ -27,10 +28,14 @@ public class OpenInvInvseeManagerImpl extends AbstractInvseeManager {
     }
 
     @Override
-    protected InventoryView openInventory(@NotNull Player viewer, @NotNull Player whom) {
+    protected InventoryView openInventory(
+            @NotNull Player viewer,
+            @NotNull Player whom,
+            @NotNull Component title
+    ) {
         if (manager.isFake(whom)) {
             var holder = new InvseeInventoryHolder(whom.getUniqueId());
-            var inv = Bukkit.createInventory(holder, 36);
+            var inv = Bukkit.createInventory(holder, 36, title);
             holder.setInventory(inv);
             inv.setContents(whom.getInventory().getStorageContents());
             return viewer.openInventory(inv);

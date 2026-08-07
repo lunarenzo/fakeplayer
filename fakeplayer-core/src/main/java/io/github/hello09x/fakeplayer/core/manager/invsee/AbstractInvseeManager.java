@@ -1,8 +1,8 @@
 package io.github.hello09x.fakeplayer.core.manager.invsee;
 
-import io.github.hello09x.devtools.core.utils.ComponentUtils;
 import io.github.hello09x.fakeplayer.core.manager.FakeplayerList;
 import io.github.hello09x.fakeplayer.core.manager.FakeplayerManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -45,7 +45,8 @@ public abstract class AbstractInvseeManager implements InvseeManager {
         if (!viewer.isOp() && !fp.isCreatedBy(viewer)) {
             return false;
         }
-        var view = this.openInventory(viewer, whom);
+        var title = translatable("fakeplayer.manager.inventory.title", text(whom.getName()));
+        var view = this.openInventory(viewer, whom, title);
         if (view == null) {
             return false;
         }
@@ -55,14 +56,14 @@ public abstract class AbstractInvseeManager implements InvseeManager {
                 SoundCategory.BLOCKS,
                 0.3F, 1.0F
         );
-        view.setTitle(ComponentUtils.toString(translatable(
-                "fakeplayer.manager.inventory.title",
-                text(whom.getName())
-        ), viewer.locale()));
         return true;
     }
 
-    protected abstract @Nullable InventoryView openInventory(@NotNull Player viewer, @NotNull Player whom);
+    protected abstract @Nullable InventoryView openInventory(
+            @NotNull Player viewer,
+            @NotNull Player whom,
+            @NotNull Component title
+    );
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void rightClickToInvsee(@NotNull PlayerInteractAtEntityEvent event) {

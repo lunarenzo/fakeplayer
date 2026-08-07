@@ -186,11 +186,13 @@ public class CommandRegistry {
                                 .withShortDescription("fakeplayer.command.config.description")
                                 .withSubcommands(
                                         command("set")
+                                                .withShortDescription("fakeplayer.command.config.set.description")
                                                 .withArguments(
                                                         configKey("feature"),
                                                         configValue("feature", "option"))
                                                 .executesPlayer(configCommand::setConfig),
                                         command("list")
+                                                .withShortDescription("fakeplayer.command.config.list.description")
                                                 .executesPlayer(configCommand::listConfig)
                                 )
                                 .executesPlayer(configCommand::listConfig),
@@ -217,7 +219,7 @@ public class CommandRegistry {
                                 .executesPlayer(teleportCommand::tphere),
                         command("tps")
                                 .withPermission(Permission.tps)
-                                .withShortDescription("fakeplayer.command.tphere.description")
+                                .withShortDescription("fakeplayer.command.tps.description")
                                 .withRequirement(CommandSupports::hasFakeplayer)
                                 .withOptionalArguments(fakeplayer("name"))
                                 .executesPlayer(teleportCommand::tps),

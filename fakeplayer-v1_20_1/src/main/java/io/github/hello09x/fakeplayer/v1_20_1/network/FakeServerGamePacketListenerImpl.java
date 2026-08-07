@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.plugin.messaging.StandardMessenger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -28,7 +27,7 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
         super(server, connection, player);
         Optional.ofNullable(Bukkit.getPlayer(player.getUUID()))
                 .map(CraftPlayer.class::cast)
-                .ifPresent(p -> p.addChannel(StandardMessenger.validateAndCorrectChannel(BUNGEE_CORD_CHANNEL)));
+                .ifPresent(p -> p.addChannel(BUNGEE_CORD_CORRECTED_CHANNEL));
     }
 
     @Override
@@ -41,8 +40,8 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
     }
 
     private void handleCustomPayloadPacket(@NotNull ClientboundCustomPayloadPacket packet) {
-        var channel = StandardMessenger.validateAndCorrectChannel(packet.getIdentifier().getNamespace() + ":" + packet.getIdentifier().getPath());
-        if (!channel.equals(BUNGEE_CORD_CHANNEL)) {
+        var channel = packet.getIdentifier().getNamespace() + ":" + packet.getIdentifier().getPath();
+        if (!channel.equals(BUNGEE_CORD_CORRECTED_CHANNEL)) {
             return;
         }
 
@@ -57,7 +56,7 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
         }
 
         var message = packet.getData().array();
-        recipient.sendPluginMessage(Main.getInstance(), channel, message);
+        recipient.sendPluginMessage(Main.getInstance(), BUNGEE_CORD_CHANNEL, message);
     }
 
 }

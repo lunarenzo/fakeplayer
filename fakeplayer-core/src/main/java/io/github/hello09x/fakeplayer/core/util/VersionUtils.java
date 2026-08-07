@@ -21,6 +21,18 @@ public final class VersionUtils {
         }
         return getMinecraftVersion();
     }
+    public static boolean isAtLeast(int major, int minor, int patch) {
+        var parts = getMinecraftVersion().split("\\.");
+        var expected = new int[]{major, minor, patch};
+        for (var i = 0; i < expected.length; i++) {
+            var current = i < parts.length ? Integer.parseInt(parts[i]) : 0;
+            if (current != expected[i]) {
+                return current > expected[i];
+            }
+        }
+        return true;
+    }
+
 
     public static boolean isSupported(@NotNull Set<String> supports) {
         var full = getMinecraftVersion();

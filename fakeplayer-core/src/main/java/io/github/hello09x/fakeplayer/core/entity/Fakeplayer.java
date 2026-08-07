@@ -18,6 +18,10 @@ import io.github.hello09x.fakeplayer.core.manager.naming.SequenceName;
 import io.github.hello09x.fakeplayer.core.util.Attributes;
 import io.github.hello09x.fakeplayer.core.util.FakeplayerFeatureUtils;
 import io.github.hello09x.fakeplayer.core.util.InternalAddressGenerator;
+import io.github.hello09x.fakeplayer.core.util.VersionUtils;
+import io.papermc.paper.connection.PlayerConnection;
+import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent;
+import net.kyori.adventure.text.Component;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -32,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -156,7 +161,7 @@ public class Fakeplayer {
                 .thenComposeAsync(nul -> SchedulerUtils.runTask(Main.getInstance(), () -> {
                     {
                         var event = this.callLoginEvent(address);
-                        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED && config.getPreventKicking().ordinal() < PreventKicking.ON_SPAWNING.ordinal()) {
+                        if (!event.allowed() && config.getPreventKicking().ordinal() < PreventKicking.ON_SPAWNING.ordinal()) {
                             throw new CommandException(translatable(
                                     "fakeplayer.command.spawn.error.disallowed", RED,
                                     text(player.getName(), WHITE),
@@ -253,14 +258,78 @@ public class Fakeplayer {
         return event;
     }
 
-    private @NotNull PlayerLoginEvent callLoginEvent(@NotNull InetAddress address) {
-        var event = new PlayerLoginEvent(
-                player,
-                address.getHostAddress(),
-                address
-        );
-        Bukkit.getPluginManager().callEvent(event);
-        return event;
+    private @NotNull LoginResult callLoginEvent(@NotNull InetAddress address) {
+        if (VersionUtils.isAtLeast(1, 21, 6)) {
+            return ModernLoginEvent.call(address);
+        }
+        return LegacyLoginEvent.call(player, address);
+    }
+
+    private record LoginResult(boolean allowed, @NotNull Component kickMessage) {
+    }
+
+    private static final class ModernLoginEvent {
+
+        private static @NotNull LoginResult call(@NotNull InetAddress address) {
+            var connection = new FakePlayerConnection(address);
+            var event = new PlayerConnectionValidateLoginEvent(connection, Component.empty());
+            Bukkit.getPluginManager().callEvent(event);
+            var disconnectReason = connection.disconnectReason;
+            return new LoginResult(
+                    event.isAllowed() && disconnectReason == null,
+                    disconnectReason == null ? event.getKickMessage() : disconnectReason
+            );
+        }
+
+        private static final class FakePlayerConnection implements PlayerConnection {
+
+            private final InetSocketAddress address;
+            private @Nullable Component disconnectReason;
+
+            private FakePlayerConnection(@NotNull InetAddress address) {
+                this.address = new InetSocketAddress(address, 0);
+            }
+
+            @Override
+            public void disconnect(@NotNull Component reason) {
+                this.disconnectReason = reason;
+            }
+
+            @Override
+            public boolean isTransferred() {
+                return false;
+            }
+
+            @Override
+            public @NotNull SocketAddress getAddress() {
+                return address;
+            }
+
+            @Override
+            public @NotNull InetSocketAddress getClientAddress() {
+                return address;
+            }
+
+            @Override
+            public @Nullable InetSocketAddress getVirtualHost() {
+                return null;
+            }
+
+            @Override
+            public @Nullable InetSocketAddress getHAProxyAddress() {
+                return null;
+            }
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static final class LegacyLoginEvent {
+
+        private static @NotNull LoginResult call(@NotNull Player player, @NotNull InetAddress address) {
+            var event = new PlayerLoginEvent(player, address.getHostAddress(), address);
+            Bukkit.getPluginManager().callEvent(event);
+            return new LoginResult(event.getResult() == PlayerLoginEvent.Result.ALLOWED, event.kickMessage());
+        }
     }
 
     /**

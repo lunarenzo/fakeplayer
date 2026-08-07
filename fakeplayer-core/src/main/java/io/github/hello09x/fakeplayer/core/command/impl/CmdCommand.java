@@ -55,6 +55,11 @@ public class CmdCommand extends AbstractCommand {
         }
 
         var name = command.getName();
+        if (!sender.hasPermission(Permission.cmd) && !config.getAllowCommands().contains(name)) {
+            sender.sendMessage(translatable("fakeplayer.command.cmd.error.no-permission", RED));
+            return;
+        }
+
         if (!sender.isOp() && (name.equals("fakeplayer") || name.equals("fp"))) {
             sender.sendMessage(translatable("fakeplayer.command.cmd.error.no-permission", RED));
             return;

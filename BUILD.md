@@ -5,17 +5,19 @@
 ## Prerequisites
 
 - JDK 21 (required to run Gradle for this project)
-- JDK 25 (required as a Gradle toolchain for Minecraft 26.1.x support)
+- JDK 25 (required as a Gradle toolchain for Minecraft 26.1.x and 26.2 support)
 - Git
 - Internet access for Gradle dependency resolution
 
-> Most modules compile with JDK 21. The 26.1.x NMS module uses a JDK 25 toolchain while still emitting Java 21 bytecode.
+> Most modules compile with JDK 21. The 26.1.x and 26.2 NMS modules use a JDK 25 toolchain while still emitting Java 21 bytecode. Minecraft 26.2 servers themselves require Java 25.
 
 ## Setup
 
 1) Clone the repo and open it in your IDE as a Gradle project.  
 2) Set the Gradle JVM to JDK 21 (IntelliJ: Settings -> Build Tools -> Gradle -> Gradle JVM).  
-3) If you build from CLI, ensure `JAVA_HOME` points to JDK 21.
+3) If you build from CLI, ensure `JAVA_HOME` points to JDK 21 or newer and that a JDK 25 toolchain is installed.
+
+The wrapper uses Gradle 9.4.1. Minecraft 26.2 is compiled against the Paper `26.2.build.111-stable` development bundle through Paperweight.
 
 ## Build
 
@@ -36,7 +38,7 @@ macOS / Linux:
 ```
 
 Output:
-- `target/fakeplayer-<version>.jar`
+- `target/libs/fakeplayer-<version>.jar`
 
 ## Optional: local Spigot remapped jar
 
@@ -48,7 +50,7 @@ By default, Gradle will resolve Spigot from Maven. If you want to use a local ja
 
 Gradle will automatically pick it up if present.
 
-For Minecraft 26.1.x, run BuildTools with Java 25 for `26.1.2`; Spigot no longer publishes or needs a `remapped-mojang` classifier for this version line.
+For Minecraft 26.1.x, run BuildTools with Java 25 for `26.1.2`; Spigot no longer publishes or needs a `remapped-mojang` classifier for this version line. Minecraft 26.2 uses the Paper development bundle and does not require a local Spigot jar.
 
 ## Optional: copy to local test servers
 

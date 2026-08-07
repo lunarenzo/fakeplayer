@@ -80,6 +80,8 @@ public class CommandRegistry {
     private DebugCommand debugCommand;
     @Inject
     private StopCommand stopCommand;
+    @Inject
+    private TestCommand testCommand;
 
     @Inject
     private FakeplayerConfig config;
@@ -445,6 +447,10 @@ public class CommandRegistry {
                                 .withShortDescription("fakeplayer.command.reload-translation.description")
                                 .withPermission(CommandPermission.OP)
                                 .executes(reloadCommand::reloadTranslation),
+                        command("test")
+                                .withShortDescription("fakeplayer.command.test.description")
+                                .withPermission(CommandPermission.OP)
+                                .executes(testCommand::test),
 
                         // developer debug
                         command("debug")

@@ -1,5 +1,6 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'com.gradleup.shadow' version '9.6.1' apply false
+    id 'io.papermc.paperweight.userdev' version '2.0.0-beta.21' apply false
 }
 
 import org.gradle.api.attributes.java.TargetJvmVersion
@@ -11,7 +12,7 @@ def versions = [
     lombok: '1.18.44',
     devtools: (findProperty('devtoolsVersion') ?: '0.1.7-SNAPSHOT').toString(),
     authlib: '4.0.43',
-    commandApi: '11.0.0',
+    commandApi: '12.0.0',
     brigadier: '1.1.8',
     nettyTransport: '4.1.82.Final',
     commonsIo: '2.15.1'
@@ -170,7 +171,7 @@ project(':fakeplayer-core') {
 }
 
 project(':fakeplayer-dist') {
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.gradleup.shadow'
 
     useJava(project, 21, 21)
 
@@ -195,6 +196,7 @@ project(':fakeplayer-dist') {
         implementation project(':fakeplayer-v1_21_10')
         implementation project(':fakeplayer-v1_21_11')
         implementation project(':fakeplayer-v26_1')
+        implementation project(':fakeplayer-v26_2')
     }
 
     buildDir = file("${rootDir}/target")
@@ -230,7 +232,8 @@ project(':fakeplayer-dist') {
         '1.21.11',
         '26.1',
         '26.1.1',
-        '26.1.2'
+        '26.1.2',
+        '26.2'
     ]
 
     tasks.register('copyToServers') {
@@ -395,3 +398,20 @@ configureNms(project(':fakeplayer-v26_1'), [
     lombok: true,
     coreProvided: true
 ])
+
+project(':fakeplayer-v26_2') {
+    apply plugin: 'io.papermc.paperweight.userdev'
+    useJava(project, 25, 21)
+
+    configurations.compileClasspath {
+        attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+    }
+
+    dependencies {
+        paperweight.paperDevBundle('26.2.build.111-stable')
+        compileOnly project(':fakeplayer-core')
+        compileOnly project(':fakeplayer-api')
+        compileOnly "org.projectlombok:lombok:${versions.lombok}"
+        annotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+    }
+}

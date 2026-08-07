@@ -3,8 +3,6 @@ package io.github.hello09x.fakeplayer.core;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.hello09x.devtools.command.CommandModule;
-import io.github.hello09x.devtools.core.TranslationModule;
-import io.github.hello09x.devtools.core.translation.TranslationConfig;
 import io.github.hello09x.devtools.core.translation.TranslatorUtils;
 import io.github.hello09x.devtools.core.utils.Exceptions;
 import io.github.hello09x.devtools.database.DatabaseModule;
@@ -22,6 +20,7 @@ import io.github.hello09x.fakeplayer.core.manager.WildFakeplayerManager;
 import io.github.hello09x.fakeplayer.core.manager.invsee.InvseeManager;
 import io.github.hello09x.fakeplayer.core.placeholder.FakeplayerPlaceholderExpansion;
 import io.github.hello09x.fakeplayer.core.repository.UsedIdRepository;
+import io.github.hello09x.fakeplayer.core.translation.FakeplayerTranslationModule;
 import io.github.hello09x.fakeplayer.core.util.update.UpdateChecker;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,9 +53,9 @@ public final class Main extends JavaPlugin {
                 new FakeplayerModule(),
                 new CommandModule(),
                 new DatabaseModule(),
-                new TranslationModule(new TranslationConfig(
+                new FakeplayerTranslationModule(
                         "message/message",
-                        TranslatorUtils.getDefaultLocale(Main.getInstance())))
+                        TranslatorUtils.getDefaultLocale(Main.getInstance()))
         );
 
         injector.getInstance(CommandRegistry.class).register();

@@ -6,7 +6,7 @@ A fork of FakePlayer maintained by CraftAmethyst.
 
 English | [简体中文](README_zh.md)
 
-This is a server side plugin inspired by [Carpet-Mod](https://github.com/gnembon/fabric-carpet) for Minecraft `1.20.x` and `1.21.x` and above.
+This is a server side plugin inspired by [Carpet-Mod](https://github.com/gnembon/fabric-carpet) for Minecraft `1.20.x`, `1.21.x`, `26.1.x`, and `26.2`.
 
 [Click me](https://youtu.be/NePaDz-P5nI) to visit a demo video.
 
@@ -27,6 +27,9 @@ This is a server side plugin inspired by [Carpet-Mod](https://github.com/gnembon
 
 + [Paper](https://papermc.io) or [Purpur](http://purpurmc.org) software
 + [CommandAPI](https://commandapi.jorel.dev) Plugin (Any version **except** `10.0.0`)
++ Java 21 for Minecraft 1.20.x through 26.1.x; Java 25 for Minecraft 26.2
+
+Minecraft 26.2 requires CommandAPI 12.0.0 or newer.
 
 ## Config file
 
@@ -78,6 +81,7 @@ This approach can let you preview new content when you are upgrading it.
 | /fp hold      | Hold corresponding hotbar item            | fakeplayer.command.hold      |                                                                 |
 | /fp cmd       | Execute command                           | fakeplayer.command.cmd       |                                                                 |
 | /fp reload    | Reload config file                        | OP                           |                                                                 |
+| /fp test      | Run an automated compatibility test       | OP                           | Temporarily changes and restores test blocks and entities       |
 
 ## Personal Configuration
 

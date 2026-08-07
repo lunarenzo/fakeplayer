@@ -19,11 +19,7 @@ import java.util.stream.Collectors;
 public class WildFakeplayerManager implements PluginMessageListener {
 
     private final static Logger log = Main.getInstance().getLogger();
-    private final static boolean IS_BUNGEECORD = Bukkit
-            .getServer()
-            .spigot()
-            .getSpigotConfig()
-            .getBoolean("settings.bungeecord", false);
+    private final static boolean IS_BUNGEECORD = Bukkit.getServer().getServerConfig().isProxyEnabled();
     private final static String CHANNEL = "BungeeCord";
     private final static String SUB_CHANNEL = "PlayerList";
 

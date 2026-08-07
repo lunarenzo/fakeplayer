@@ -12,9 +12,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 @Deprecated
@@ -24,7 +24,7 @@ public class UsedIdRepository {
     public final static UsedIdRepository instance = new UsedIdRepository();
     private final static Logger log = Main.getInstance().getLogger();
 
-    private final Set<UUID> UUIDS = new HashSet<>();
+    private final Set<UUID> UUIDS = ConcurrentHashMap.newKeySet();
 
     @Inject
     public UsedIdRepository() {

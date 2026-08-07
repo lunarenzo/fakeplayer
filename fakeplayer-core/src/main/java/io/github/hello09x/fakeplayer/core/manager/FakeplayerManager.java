@@ -397,7 +397,11 @@ public class FakeplayerManager {
      * @return 是否是假人
      */
     public boolean isFake(@NotNull Player target) {
-        return this.playerList.getByUUID(target.getUniqueId()) != null;
+        return this.isFake(target.getUniqueId());
+    }
+
+    public boolean isFake(@NotNull UUID uuid) {
+        return this.playerList.getByUUID(uuid) != null;
     }
 
     /**
@@ -407,7 +411,7 @@ public class FakeplayerManager {
      * @return 是否不是假人
      */
     public boolean isNotFake(@NotNull Player target) {
-        return this.playerList.getByUUID(target.getUniqueId()) == null;
+        return !this.isFake(target);
     }
 
     /**

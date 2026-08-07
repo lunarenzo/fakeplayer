@@ -7,13 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 @Singleton
 public class FakeplayerList {
 
-    private final Map<String, Fakeplayer> playersByName = new HashMap<>();
-    private final Map<UUID, Fakeplayer> playersByUUID = new HashMap<>();
+    private final Map<String, Fakeplayer> playersByName = new ConcurrentHashMap<>();
+    private final Map<UUID, Fakeplayer> playersByUUID = new ConcurrentHashMap<>();
     private final Map<String, List<Fakeplayer>> playersByCreator = new HashMap<>();
 
     /**

@@ -19,7 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
@@ -54,22 +54,22 @@ public class FakeplayerListener implements Listener {
      * 拒绝真实玩家使用假人用过的 ID 登陆
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void disallowUsedUUIDLogin(@NotNull PlayerLoginEvent event) {
-        var player = event.getPlayer();
-        if (player.hasMetadata(MetadataKeys.SPAWNED_AT)) {
+    public void disallowUsedUUIDLogin(@NotNull AsyncPlayerPreLoginEvent event) {
+        var uuid = event.getUniqueId();
+        if (manager.isFake(uuid)) {
             return;
         }
 
-        if (usedIdRepository.contains(player.getUniqueId()) || profileRepository.existsByUUID(player.getUniqueId())) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, textOfChildren(
+        if (usedIdRepository.contains(uuid) || profileRepository.existsByUUID(uuid)) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, textOfChildren(
                     translatable("fakeplayer.listener.login.deny-used-uuid", RED),
                     newline(),
                     newline(),
                     text("<<---- fakeplayer ---->>", GRAY)
             ));
             log.info("%s(%s) was disallowed to login because his UUID was used by [Fakeplayer]".formatted(
-                    player.getName(),
-                    player.getUniqueId()
+                    event.getName(),
+                    uuid
             ));
         }
     }

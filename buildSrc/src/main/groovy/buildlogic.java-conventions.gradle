@@ -35,7 +35,7 @@ repositories {
 }
 
 group = 'io.github.hello09x.fakeplayer'
-version = '0.3.21'
+version = '0.4.0'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 publishing {

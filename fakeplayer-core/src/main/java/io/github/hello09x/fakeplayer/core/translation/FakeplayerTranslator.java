@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.translation.Translator;
-import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,12 +74,7 @@ public final class FakeplayerTranslator implements Translator {
             for (var classLoader : classLoaders) {
                 ResourceBundle bundle;
                 try {
-                    bundle = ResourceBundle.getBundle(
-                            baseName,
-                            locale,
-                            classLoader,
-                            UTF8ResourceBundleControl.get()
-                    );
+                    bundle = ResourceBundle.getBundle(baseName, locale, classLoader);
                 } catch (MissingResourceException ignored) {
                     continue;
                 }

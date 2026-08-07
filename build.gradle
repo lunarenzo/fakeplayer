@@ -9,7 +9,7 @@ def revisionValue = (findProperty('revision') ?: '0.4.0').toString()
 
 def versions = [
     paperApi: '1.21.7-R0.1-SNAPSHOT',
-    lombok: '1.18.44',
+    lombok: '1.18.46',
     devtools: (findProperty('devtoolsVersion') ?: '0.1.7-SNAPSHOT').toString(),
     authlib: '4.0.43',
     commandApi: '12.0.0',

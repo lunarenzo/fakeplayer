@@ -36,7 +36,7 @@ public class OpenInvInvseeManagerImpl extends AbstractInvseeManager {
             return viewer.openInventory(inv);
         }
         try {
-            return openInv.openInventory(viewer, openInv.getSpecialInventory(whom, true));
+            return openInv.openInventory(viewer, openInv.getSpecialInventory(whom, true), false);
         } catch (InstantiationException e) {
             log.warning("Failed to %s's open inventory for %s\n%s".formatted(whom.getName(), viewer.getName(), Throwables.getStackTraceAsString(e)));
             return null;

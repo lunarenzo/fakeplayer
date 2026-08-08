@@ -178,7 +178,6 @@ public class Fakeplayer {
                         this.player.getInventory().clear();
                     }
 
-                    FakeplayerFeatureUtils.setInvulnerable(this.player, option.invulnerable());
                     this.player.setCollidable(option.collidable());
                     this.player.setCanPickupItems(option.pickupItems());
                     if (option.lookAtEntity()) {
@@ -199,6 +198,7 @@ public class Fakeplayer {
 
                     this.network = bridge.createNetwork(address);
                     this.network.placeNewPlayer(Bukkit.getServer(), this.player);
+                    FakeplayerFeatureUtils.setInvulnerable(this.player, option.invulnerable());
                     this.player.getInventory().setHeldItemSlot(option.heldSlot());
                     this.player.setHealth(Optional.ofNullable(this.player.getAttribute(Attributes.maxHealth()))
                             .map(AttributeInstance::getValue)

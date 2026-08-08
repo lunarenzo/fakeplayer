@@ -33,8 +33,39 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
             @NotNull CommonListenerCookie cookie
     ) {
         super(server, connection, player, cookie);
+        // Paper's ServerPlayer.isInvulnerableTo() returns true (= invulnerable)
+        // when !this.connection.hasClientLoaded(). That method checks whether the
+        // private field `clientLoadedTimeoutTimer` is 0. In a real player's lifecycle
+        // it is set to 60 on spawn and counts down to 0 via tickClientLoadTimeout().
+        // Fake players have no network tick loop, so the timer never decrements and
+        // hasClientLoaded() permanently returns false, keeping bots invulnerable forever.
+        // Zeroing the timer here makes hasClientLoaded() return true immediately.
+        zeroClientLoadedTimer();
         Optional.ofNullable(Bukkit.getPlayer(player.getUUID()))
                 .ifPresent(p -> this.addChannel(p, BUNGEE_CORD_CORRECTED_CHANNEL));
+    }
+
+    /**
+     * Zero out the {@code clientLoadedTimeoutTimer} field via reflection so that
+     * {@code hasClientLoaded()} returns {@code true} immediately.
+     */
+    private void zeroClientLoadedTimer() {
+        var cls = this.getClass().getSuperclass();
+        while (cls != null) {
+            try {
+                var field = cls.getDeclaredField("clientLoadedTimeoutTimer");
+                field.setAccessible(true);
+                field.setInt(this, 0);
+                return;
+            } catch (NoSuchFieldException ignored) {
+                cls = cls.getSuperclass();
+            } catch (IllegalAccessException e) {
+                log.warning("[fakeplayer] Failed to zero clientLoadedTimeoutTimer: " + e.getMessage());
+                return;
+            }
+        }
+        // Field not found — not a Paper server or field was renamed; log a warning.
+        log.warning("[fakeplayer] clientLoadedTimeoutTimer field not found; bots may be invulnerable on this server build.");
     }
 
     private boolean addChannel(@NotNull Player player, @NotNull String channel) {
@@ -48,21 +79,6 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return false;
         }
-    }
-
-    /**
-     * Always report the fake player's client as loaded.
-     *
-     * Paper's ServerPlayer.isInvulnerableTo() returns {@code true} (invulnerable) when
-     * {@code !this.connection.hasClientLoaded()}. The real implementation counts down
-     * {@code clientLoadedTimeoutTimer} from 60 to 0 via {@code tickClientLoadTimeout()},
-     * but that ticker is never called for fake players since there's no real network tick.
-     * Returning {@code true} here unconditionally ensures the bot respects its actual
-     * invulnerable flag instead of being permanently unkillable.
-     */
-    @Override
-    public boolean hasClientLoaded() {
-        return true;
     }
 
     @Override

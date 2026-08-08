@@ -51,13 +51,33 @@ public class FakeplayerModule extends AbstractModule {
     @Provides
     @Singleton
     private @NotNull NMSBridge nmsBridge() {
-        var bridge = ServiceLoader
+        var bridges = ServiceLoader
                 .load(NMSBridge.class, NMSBridge.class.getClassLoader())
                 .stream()
                 .map(ServiceLoader.Provider::get)
+                .toList();
+
+        var bridge = bridges.stream()
                 .filter(NMSBridge::isSupported)
                 .findAny()
                 .orElse(null);
+
+        if (bridge == null) {
+            var currentVer = VersionUtils.MinecraftVersion.parse(VersionUtils.getMinecraftVersion());
+            bridge = bridges.stream()
+                    .filter(b -> {
+                        try {
+                            var ver = VersionUtils.getBridgeVersion(b);
+                            return ver.major() == currentVer.major()
+                                    && ver.minor() == currentVer.minor()
+                                    && ver.compareTo(currentVer) <= 0;
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
+                    .max((b1, b2) -> VersionUtils.getBridgeVersion(b1).compareTo(VersionUtils.getBridgeVersion(b2)))
+                    .orElse(null);
+        }
 
         if (bridge == null) {
             throw new ExceptionInInitializerError("Unsupported Minecraft version: " + VersionUtils.getMinecraftVersion());

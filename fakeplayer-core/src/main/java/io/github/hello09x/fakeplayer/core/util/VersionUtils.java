@@ -37,4 +37,37 @@ public final class VersionUtils {
     public static boolean isSupported(@NotNull Set<String> supports) {
         return supports.contains(getMinecraftVersion());
     }
+
+    public record MinecraftVersion(int major, int minor, int patch) implements Comparable<MinecraftVersion> {
+        public static @NotNull MinecraftVersion parse(@NotNull String version) {
+            var parts = version.split("\\.");
+            int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
+            int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+            int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+            return new MinecraftVersion(major, minor, patch);
+        }
+
+        @Override
+        public int compareTo(@NotNull MinecraftVersion o) {
+            if (this.major != o.major) {
+                return Integer.compare(this.major, o.major);
+            }
+            if (this.minor != o.minor) {
+                return Integer.compare(this.minor, o.minor);
+            }
+            return Integer.compare(this.patch, o.patch);
+        }
+    }
+
+    public static @NotNull MinecraftVersion getBridgeVersion(@NotNull io.github.hello09x.fakeplayer.api.spi.NMSBridge bridge) {
+        String name = bridge.getClass().getPackageName();
+        var parts = name.split("\\.");
+        for (var part : parts) {
+            if (part.startsWith("v")) {
+                var verStr = part.substring(1).replace('_', '.');
+                return MinecraftVersion.parse(verStr);
+            }
+        }
+        throw new IllegalArgumentException("Unknown NMSBridge package: " + name);
+    }
 }

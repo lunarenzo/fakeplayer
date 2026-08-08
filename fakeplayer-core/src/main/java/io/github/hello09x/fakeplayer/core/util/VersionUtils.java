@@ -35,10 +35,6 @@ public final class VersionUtils {
 
 
     public static boolean isSupported(@NotNull Set<String> supports) {
-        var full = getMinecraftVersion();
-        if (supports.contains(full)) {
-            return true;
-        }
-        return supports.contains(getMinecraftMajorMinor());
+        return supports.contains(getMinecraftVersion());
     }
 }

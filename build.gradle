@@ -384,7 +384,7 @@ configureNms(project(':fakeplayer-v1_21_10'), [
 configureNms(project(':fakeplayer-v1_21_11'), [
     javaVersion: 21,
     nmsVersion: '1.21.11-R0.1-SNAPSHOT',
-    lombok: false,
+    lombok: true,
     coreProvided: true,
     dependsOn: ':fakeplayer-v1_21_9',
     transitive: false

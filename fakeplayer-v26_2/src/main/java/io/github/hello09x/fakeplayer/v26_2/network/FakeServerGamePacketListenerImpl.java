@@ -49,6 +49,21 @@ public class FakeServerGamePacketListenerImpl extends ServerGamePacketListenerIm
         }
     }
 
+    /**
+     * Always report the fake player's client as loaded.
+     *
+     * Paper's ServerPlayer.isInvulnerableTo() returns {@code true} (invulnerable) when
+     * {@code !this.connection.hasClientLoaded()}. The real implementation counts down
+     * {@code clientLoadedTimeoutTimer} from 60 to 0 via {@code tickClientLoadTimeout()},
+     * but that ticker is never called for fake players since there's no real network tick.
+     * Returning {@code true} here unconditionally ensures the bot respects its actual
+     * invulnerable flag instead of being permanently unkillable.
+     */
+    @Override
+    public boolean hasClientLoaded() {
+        return true;
+    }
+
     @Override
     public void send(Packet<?> packet) {
         if (packet instanceof ClientboundCustomPayloadPacket p) {

@@ -2,10 +2,12 @@ package io.github.hello09x.fakeplayer.core.util;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import io.github.hello09x.fakeplayer.core.Main;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class FakeplayerFeatureUtils {
 
@@ -29,7 +31,8 @@ public class FakeplayerFeatureUtils {
             if (handle != null) {
                 invokeMethod(handle, "setInvulnerable", new Class[]{boolean.class}, invulnerable);
             }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            Main.getInstance().getLogger().log(Level.WARNING, "Failed to setHandleInvulnerable", e);
         }
     }
 
@@ -39,7 +42,8 @@ public class FakeplayerFeatureUtils {
             if (handle != null) {
                 setIntField(handle, "invulnerableTime", ticks);
             }
-        } catch (IllegalAccessException | NoSuchFieldException ignored) {
+        } catch (Exception e) {
+            Main.getInstance().getLogger().log(Level.WARNING, "Failed to setInvulnerableTime", e);
         }
     }
 
@@ -47,7 +51,8 @@ public class FakeplayerFeatureUtils {
         try {
             var abilities = getAbilities(player);
             return abilities != null && getBooleanField(abilities, "invulnerable");
-        } catch (IllegalAccessException | NoSuchFieldException ignored) {
+        } catch (Exception e) {
+            Main.getInstance().getLogger().log(Level.WARNING, "Failed to getAbilitiesInvulnerable", e);
             return false;
         }
     }
@@ -62,7 +67,8 @@ public class FakeplayerFeatureUtils {
 
             setBooleanField(abilities, "invulnerable", invulnerable);
             invokeMethod(handle, "onUpdateAbilities", new Class[0]);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            Main.getInstance().getLogger().log(Level.WARNING, "Failed to setAbilitiesInvulnerable", e);
         }
     }
 
@@ -77,15 +83,22 @@ public class FakeplayerFeatureUtils {
 
         try {
             return invokeMethod(handle, "getAbilities", new Class[0]);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-            return null;
+        } catch (Exception ignored) {
+            try {
+                // Fallback to accessing the public final field 'abilities' directly
+                return findField(handle.getClass(), "abilities").get(handle);
+            } catch (Exception e) {
+                Main.getInstance().getLogger().log(Level.WARNING, "Failed to getAbilities via field 'abilities'", e);
+                return null;
+            }
         }
     }
 
     private static Object getHandle(@NotNull Player player) {
         try {
             return player.getClass().getMethod("getHandle").invoke(player);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            Main.getInstance().getLogger().log(Level.WARNING, "Failed to getHandle", e);
             return null;
         }
     }

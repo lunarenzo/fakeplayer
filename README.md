@@ -1,4 +1,4 @@
-# FakePlayer - QM
+# FakePlayer
 
 A fork of FakePlayer maintained by CraftAmethyst.
 
